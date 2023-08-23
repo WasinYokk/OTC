@@ -13,7 +13,7 @@ template generateCashBalance() {
     signal output cashBalance;
 
     component poseidon = Poseidon(3);
-    poseidon.inputs[0] <== userID;
+    poseidon.inputs[0] <== userID; 
     poseidon.inputs[1] <== totalCash;
     poseidon.inputs[2] <== cashSalt;
 
