@@ -8,7 +8,7 @@ include "circomlib-master/circuits/comparators.circom";
 // 2. Proof that you know the share balance
 // 3. Proof that you have enough share balance
 
-template generateUser() {
+template generateUserID() {
 
     // Private Input
     signal input password;
@@ -103,8 +103,8 @@ template enoughStock() {
     signal output newSB;
     signal output newCB;
 
-    // Proof that you are the user
-    component generateU = generateUser();
+    // 1. Prove that you are the user
+    component generateU = generateUserID();
     generateU.password <== password;
     generateU.userSalt <== userSalt;
     
@@ -114,7 +114,7 @@ template enoughStock() {
 
     result[0] <== equalCheck.out;
 
-    // Proof that you know the share balance
+    // 2. Prove that you know the share balance
     component generateSB = generateStockBalance();
     generateSB.userID <== generateU.userID;
     generateSB.stockName <== stockName;
@@ -127,7 +127,7 @@ template enoughStock() {
 
     result[1] <== equalCheck2.out;
 
-    // 3. Proof that you have enough share balance;
+    // 3. Prove that you have enough share balance;
     component greaterThan = GreaterThan(252);
 
     greaterThan.in[0] <== totalStock;
@@ -135,7 +135,7 @@ template enoughStock() {
 
     result[2] <== greaterThan.out;
     
-    // Final Proof that everything is valid
+    // 4. Final Proof that everything is valid
     
     // answer 1 === answer 2 //
     component equality = IsEqual();
@@ -158,14 +158,14 @@ template enoughStock() {
 
     finalResult[2] <== equality3.out;
 
-    // LastCheck answer 1 === 0 //
+    // 5. LastCheck answer 1 === 0 //
     result[0] === 0;
 
     // What we need to update //
     // Stock Amount //
     // Cash Amount //
 
-    // Generate Update Stock Balance
+    // 6. Generate Update Stock Balance
     new <== totalStock - sellAmount;
 
     component updateSB = generateStockBalance();
@@ -177,7 +177,7 @@ template enoughStock() {
     
     newSB <== updateSB.stockBalance;
 
-    // Generate Update Cash Balance
+    // 7. Generate Update Cash Balance
     totalPay <== sellAmount * price;
     new2 <== totalCash + totalPay;
 
