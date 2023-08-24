@@ -8,13 +8,14 @@ template generateStockBalance() {
     signal input userID; // UserID //
     signal input stockName; // The stockName represent by number //
     signal input totalStock; // The total stock number //
-    signal input stockSalt;
+    signal input stockSalt; // Salt
     
     // Output
     signal output stockBalance; 
 
-    component poseidon = Poseidon(4);
+    component poseidon = Poseidon(4); // Create a component for Poseidon Hash function and Indicate the number of input
 
+    // Indicate the sequence of the input feeding to the Poseidon Hash //
     poseidon.inputs[0] <== userID;
     poseidon.inputs[1] <== stockName;
     poseidon.inputs[2] <== totalStock;
