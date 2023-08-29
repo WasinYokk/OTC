@@ -57,11 +57,12 @@ contract OTC {
     //======================
 
     // Auto-generating stock numbers
-    uint256 private stockNoCounter = 0;
+    uint256 public stockNoCounter = 0;
 
     // Auto-generating order index
-    uint256 private orderCounter = 0;
+    uint256 public orderCounter = 0;
 
+    address private owner;
 
     PlonkVerifier public sellStockVerifier;
     PlonkVerifierB public buyStockVerifier;
@@ -70,6 +71,7 @@ contract OTC {
     constructor(address _sellStockVerifierAddress, address _buyStockVerifierAddress) {
         sellStockVerifier = PlonkVerifier(_sellStockVerifierAddress);
         buyStockVerifier = PlonkVerifierB(_buyStockVerifierAddress);
+        owner = msg.sender;
     }
 
     //======================
@@ -86,6 +88,10 @@ contract OTC {
         _;
     }
 
+    modifier onlyOwner() {
+    require(msg.sender == owner, "Not authorized. Only the owner can call this.");
+    _;
+    }
 
     //======================
     // List
@@ -108,20 +114,21 @@ contract OTC {
 
     // registeredAddress : maps an Ethereum address to a boolean value indicating whether that address has been registered or not.
     // Ensure that an Ethereum address cannot regiester more than once
-    mapping(address => bool) private registeredAddress;
+    mapping(address => bool) public registeredAddress;
 
     // stockRegistry : maps a stock's name to its details (a "RegisteredStock" structure)
-    mapping(string => RegisteredStock) private stockRegistry; // Allows lookup of a stock's details using its name
+    mapping(string => RegisteredStock) public stockRegistry; // Allows lookup of a stock's details using its name
 
     // noToStockName : maps a stock number to its name
-    mapping(uint256 => string) private noToStockName; // Allows us to find the stock name using its no.
+    mapping(uint256 => string) public noToStockName; // Allows us to find the stock name using its no.
 
     // usernameToaddress : map the user's username to his/her address
-    mapping(string => address) private usernameToaddress;
+    mapping(string => address) public usernameToaddress;
 
     // orderToCashBalance : map the new Cash balance of the seller to his/her Sell Order
     mapping(uint256 => uint) public orderToCashBalance;
 
+    mapping(address => mapping(string => uint256)) public userStockToBalance;
 
     //======================
     // EVENTS
@@ -183,7 +190,7 @@ contract OTC {
     }
 
     // Function to register the stock to the system
-    function registerStock(string memory _stockName) public {
+    function registerStock(string memory _stockName) public onlyOwner {
 
         // Ensure that this stock doesn't exist in the system
         require(bytes(stockRegistry[_stockName].stockName).length == 0, "Stock name already registered");
@@ -194,12 +201,12 @@ contract OTC {
         noToStockName[stockNoCounter] = _stockName;
         registeredStocks.push(newStock);  // Add the new stock to the list of registered stocks
 
+        // Emit the StockRegistered Event
+        emit StockRegistered(stockNoCounter, _stockName);
 
         // Increment the counter for the next stock
         stockNoCounter++;
 
-        // Emit the StockRegistered Event
-        emit StockRegistered(stockNoCounter, _stockName);
     }
 
     // VIEW FUNCTIONS
@@ -207,6 +214,15 @@ contract OTC {
     function viewAccount(address _user) public view returns (address ,string memory, UserStock[] memory, uint256) {
         Account storage userAccount = accounts[_user];
         return (userAccount.userAddress,userAccount.username, userAccount.stocks, userAccount.cashBalance);
+    }
+
+    function viewAccountBalance() public view returns (uint) {
+        Account storage userAccount = accounts[msg.sender];
+        return (userAccount.cashBalance);
+    }
+
+    function viewUserStockBalance(string memory _stockName) public view returns (uint) {
+        return (userStockToBalance[msg.sender][_stockName]);
     }
 
     // Function to view the stock details by its name
@@ -258,6 +274,10 @@ contract OTC {
         return userAddress;
     }
 
+    function getUserStockCount() public view returns (uint256) {
+    return accounts[msg.sender].stocks.length;
+    }
+
     // UPDATE BALANCE FUNCTIONS
     // Function to add stock to a user's account Using stockName
     function UpdateStockBalance(string memory _stockName, uint _amount) public {
@@ -279,6 +299,7 @@ contract OTC {
             if(keccak256(abi.encodePacked(userAccount.stocks[i].stockName)) == keccak256(abi.encodePacked(_stockName))) {
                 userAccount.stocks[i].amount = _amount;
                 stockExist = true;
+                userStockToBalance[msg.sender][_stockName] = _amount;
                 break;
             }
         }
@@ -289,10 +310,13 @@ contract OTC {
                 no: stockRegistry[_stockName].no,
                 stockName: _stockName,
                 amount: _amount
+                
             });
             
             // Add the new stock to the user porfolio
             userAccount.stocks.push(newUserStock);
+
+            userStockToBalance[msg.sender][_stockName] = _amount;
 
             emit StockBalanceUpdate(
                 msg.sender,
