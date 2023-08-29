@@ -136,7 +136,6 @@ template enoughStock() {
     result[2] <== greaterThan.out;
     
     // 4. Final Proof that everything is valid
-    
     // answer 1 === answer 2 //
     component equality = IsEqual();
     equality.in[0] <== result[0];
