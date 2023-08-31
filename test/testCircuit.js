@@ -44,11 +44,17 @@ describe("Circuit Test", function (){
         
         const{ password, salt } = await loadFixture(userFixture);
         const id = await generateUserID(password, salt);
-
+        
         const id2 = await generateUserID("989989", "22");
+        const id3 = await generateUserID("6666", "11");
+        const id4 = await generateUserID("45678", "33");
         
         assert.notEqual(id, id2, "Both IDs should not be the same");
-            
+        assert.notEqual(id, id3, "Both IDs should not be the same");
+        assert.notEqual(id, id4, "Both IDs should not be the same");  
+        assert.notEqual(id2, id3, "Both IDs should not be the same"); 
+        assert.notEqual(id2, id4, "Both IDs should not be the same"); 
+        assert.notEqual(id3, id4, "Both IDs should not be the same");    
         }
     )
 
@@ -57,8 +63,15 @@ describe("Circuit Test", function (){
         const id = await generateUserID(password, salt);
 
         const id2 = await generateUserID(password, "22");
+        const id3 = await generateUserID(password, "11");
+        const id4 = await generateUserID(password, "33");
         
         assert.notEqual(id, id2, "Both IDs should not be the same");
+        assert.notEqual(id, id3, "Both IDs should not be the same");
+        assert.notEqual(id, id4, "Both IDs should not be the same");  
+        assert.notEqual(id2, id3, "Both IDs should not be the same"); 
+        assert.notEqual(id2, id4, "Both IDs should not be the same"); 
+        assert.notEqual(id3, id4, "Both IDs should not be the same"); 
     })
 
     it("User generating a stock balance", async function () {
@@ -75,8 +88,15 @@ describe("Circuit Test", function (){
         const stockBalance = await generateStockBalance(userID, stockName, totalStock, stockSalt);
 
         const stockBalance2 = await generateStockBalance("19559708564467027071309568042669577929093050622036796493164541452023845929520",stockName, totalStock, stockSalt);
+        const stockBalance3 = await generateStockBalance("23567",stockName, totalStock, stockSalt);
+        const stockBalance4 = await generateStockBalance("889999",stockName, totalStock, stockSalt);
 
         assert.notEqual(stockBalance, stockBalance2, "Both stock balance should not be the same");
+        assert.notEqual(stockBalance, stockBalance3, "Both stock balance should not be the same");
+        assert.notEqual(stockBalance, stockBalance4, "Both stock balance should not be the same");  
+        assert.notEqual(stockBalance2, stockBalance3, "Both stock balance should not be the same"); 
+        assert.notEqual(stockBalance3, stockBalance4, "Both stock balance should not be the same"); 
+        assert.notEqual(stockBalance3, stockBalance4, "Both stock balance should not be the same");
     })
 
     it("Ensure that difference salt generate different stockbalance, even though the balance and user ID is equal", async function (){
@@ -85,8 +105,15 @@ describe("Circuit Test", function (){
         const stockBalance = await generateStockBalance(userID, stockName, totalStock, stockSalt);
 
         const stockBalance2 = await generateStockBalance(userID,stockName, totalStock, "980");
+        const stockBalance3 = await generateStockBalance(userID,stockName, totalStock, "13567");
+        const stockBalance4 = await generateStockBalance(userID,stockName, totalStock, "000000");
 
         assert.notEqual(stockBalance, stockBalance2, "Both stock balance should not be the same");
+        assert.notEqual(stockBalance, stockBalance3, "Both stock balance should not be the same");
+        assert.notEqual(stockBalance, stockBalance4, "Both stock balance should not be the same");  
+        assert.notEqual(stockBalance2, stockBalance3, "Both stock balance should not be the same"); 
+        assert.notEqual(stockBalance3, stockBalance4, "Both stock balance should not be the same"); 
+        assert.notEqual(stockBalance3, stockBalance4, "Both stock balance should not be the same");
     })
 
 
@@ -104,8 +131,15 @@ describe("Circuit Test", function (){
         const cashBalance = await generateCashBalance(userID, totalCash, cashSalt);
 
         const cashBalance2 = await generateCashBalance("19559708564467027071309568042669577929093050622036796493164541452023845929520",totalCash, cashSalt);
+        const cashBalance3 = await generateCashBalance("21341",totalCash, cashSalt);
+        const cashBalance4 = await generateCashBalance("55689",totalCash, cashSalt);
 
         assert.notEqual(cashBalance, cashBalance2, "Both cash balance should not be the same");
+        assert.notEqual(cashBalance, cashBalance3, "Both cash balance should not be the same");
+        assert.notEqual(cashBalance, cashBalance4, "Both cash balance should not be the same");
+        assert.notEqual(cashBalance2, cashBalance3, "Both cash balance should not be the same");
+        assert.notEqual(cashBalance2, cashBalance4, "Both cash balance should not be the same");
+        assert.notEqual(cashBalance3, cashBalance4, "Both cash balance should not be the same");
     })
 
     it("Ensure that difference salt generate different cashbalance, even though the balance and user ID is equal", async function (){
@@ -114,8 +148,15 @@ describe("Circuit Test", function (){
         const cashBalance = await generateCashBalance(userID,totalCash, cashSalt);
 
         const cashBalance2 = await generateCashBalance(userID,totalCash, "980");
+        const cashBalance3 = await generateCashBalance(userID,totalCash, "8888");
+        const cashBalance4 = await generateCashBalance(userID,totalCash, "981340");
 
         assert.notEqual(cashBalance, cashBalance2, "Both cash balance should not be the same");
+        assert.notEqual(cashBalance, cashBalance3, "Both cash balance should not be the same");
+        assert.notEqual(cashBalance, cashBalance4, "Both cash balance should not be the same");
+        assert.notEqual(cashBalance2, cashBalance3, "Both cash balance should not be the same");
+        assert.notEqual(cashBalance2, cashBalance4, "Both cash balance should not be the same");
+        assert.notEqual(cashBalance3, cashBalance4, "Both cash balance should not be the same");
     })
 
 

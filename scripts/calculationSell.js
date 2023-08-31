@@ -18,49 +18,49 @@ async function generateCashBalance(userID, totalCash, cashSalt) {
     return poseidon([userID, totalCash, cashSalt]);
 }
 
-async function exportCallDataPlonk(input) {
-    const { proof, publicSignals } = await plonk.fullProve(input,"./scripts/fullSellStock.wasm", "./scripts/circuit_final_full_SellStock.zkey");
+// async function exportCallDataPlonk(input) {
+//     const { proof, publicSignals } = await plonk.fullProve(input,"./scripts/fullSellStock.wasm", "./scripts/circuit_final_full_SellStock.zkey");
 
-    const calldata = await plonk.exportSolidityCallData(proof, publicSignals);
+//     const calldata = await plonk.exportSolidityCallData(proof, publicSignals);
 
-    // without this the execution never terminates (https://github.com/iden3/snarkjs/issues/152)
-    globalThis.curve_bn128.terminate(); 
+//     // without this the execution never terminates (https://github.com/iden3/snarkjs/issues/152)
+//     globalThis.curve_bn128.terminate(); 
 
-    console.log(calldata);
+//     console.log(calldata);
 
-    //uses a regular expression to remove any double quotes, square brackets, and whitespace characters from the calldata string.//
-    const argv = calldata.replace(/["[\]\s]/g, "").split(",");
+//     //uses a regular expression to remove any double quotes, square brackets, and whitespace characters from the calldata string.//
+//     const argv = calldata.replace(/["[\]\s]/g, "").split(",");
 
-    return argv;
-}
+//     return argv;
+// }
 
 
-async function callData(password, userSalt, userHash, stockName, totalStock, stockSalt, stockHash, totalCash, cashSalt, sellAmount, price) {
-    const INPUT = {
-        password: password,
-        userSalt: userSalt,
-        userHash: userHash,
-        stockName: stockName,
-        totalStock: totalStock,
-        stockSalt: stockSalt,
-        stockHash: stockHash,
-        totalCash: totalCash,
-        cashSalt: cashSalt,
-        sellAmount: sellAmount,
-        price: price
-    };
+// async function callData(password, userSalt, userHash, stockName, totalStock, stockSalt, stockHash, totalCash, cashSalt, sellAmount, price) {
+//     const INPUT = {
+//         password: password,
+//         userSalt: userSalt,
+//         userHash: userHash,
+//         stockName: stockName,
+//         totalStock: totalStock,
+//         stockSalt: stockSalt,
+//         stockHash: stockHash,
+//         totalCash: totalCash,
+//         cashSalt: cashSalt,
+//         sellAmount: sellAmount,
+//         price: price
+//     };
 
-    let proof;
+//     let proof;
 
-    try {
-        let dataResult = await exportCallDataPlonk(INPUT);
-        proof = dataResult.slice(0, 36);
-    } catch (error) {
-        console.log(error);
-    }
+//     try {
+//         let dataResult = await exportCallDataPlonk(INPUT);
+//         proof = dataResult.slice(0, 36);
+//     } catch (error) {
+//         console.log(error);
+//     }
 
-    return proof;
-}
+//     return proof;
+// }
 
 module.exports = {
     generateUserID,
